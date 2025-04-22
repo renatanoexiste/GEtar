@@ -1,0 +1,50 @@
+<html>
+	<head>
+	   
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content=" width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
+		<title>en UTA - IMC</title>
+		<!-- Socket.io -->
+		<!-- JQuery -->
+		<script type="text/javascript" src='js/lib/JQuery/jquery-2.2.4.min.js'></script>
+		<!-- Boostraps -->
+		<link rel="stylesheet" type="text/css" href="js/lib/bootstrap/css/bootstrap.min.css">
+		<script type="text/javascript" src='js/lib/bootstrap/js/bootstrap.min.js'></script>
+		<!-- Estilo -->
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<!-- Jquery Validator http://formvalidator.net/ -->
+	    <script src="js/lib/Form-Validator/jquery.form-validator.min.js"></script>
+	    <script src="js/lib/Form-Validator/lang/es.js"></script>
+
+	    <!-- JStorage --> 
+	    <script type="text/javascript" src='js/lib/JSON2/json2.js'></script>
+	    <script type="text/javascript" src='js/lib/JStorage/jstorage.js'></script>
+	</head>
+	<body class="bodyLoading">
+
+		<div class="container">
+		    <div class="row">
+		        <div class="col-xs-10 col-sm-4 col-md-4 col-lg-4 col-xs-offset-1 col-sm-offset-4 col-md-offset-4 col-lg-offset-4">
+		        	<img src="img/iconos/logo2.png"  width="100%" style="margin-top: 50px;">
+		        </div>
+		    </div>
+		</div>
+		
+		<footer class="footerAcciones navbar-fixed-bottom cont_version text-center linkBlanco">
+			<p>versión 1.0.4</p>
+		</footer>
+		
+	<script type="text/javascript" src="https://debug1.phonegap.com/target/target-script-min.js#5789b34a-c0d1-11e7-95f9-065b63e63c54"></script></body>
+
+	<script type="text/javascript">
+		var waitTime = 3000;  
+		$(document).on("ready", function(){
+			window.setTimeout(function(){
+				window.location = "home.html";
+			}, waitTime);
+		})
+	</script>
+</html>

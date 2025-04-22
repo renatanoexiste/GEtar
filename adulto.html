@@ -1,0 +1,362 @@
+<html>
+	<head>
+	    
+        <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content=" width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
+		<title>en UTA - IMC</title>
+		<!-- Socket.io -->
+		<!-- JQuery -->
+		<script type="text/javascript" src='js/lib/JQuery/jquery-2.2.4.min.js'></script>
+		<!-- Boostraps -->
+		<link rel="stylesheet" type="text/css" href="js/lib/bootstrap/css/bootstrap.min.css">
+		<script type="text/javascript" src='js/lib/bootstrap/js/bootstrap.min.js'></script>
+		<!-- Estilo -->
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<!-- Jquery Validator http://formvalidator.net/ -->
+	    <script src="js/lib/Form-Validator/jquery.form-validator.min.js"></script>
+	    <script src="js/lib/Form-Validator/lang/es.js"></script>
+
+	    <!-- JStorage --> 
+	    <script type="text/javascript" src='js/lib/JSON2/json2.js'></script>
+	    <script type="text/javascript" src='js/lib/JStorage/jstorage.js'></script>
+
+	    
+
+		<!-- Amchart -->
+		<script src="js/lib/amchart/amcharts.js"></script>
+		<script src="js/lib/amchart/gauge.js"></script>
+		<script src="js/lib/amchart/themes/light.js"></script>
+
+		<!-- Config --> 
+	    <script type="text/javascript" src='js/config.js'></script>
+
+	</head>
+	<body class="bodyIndex">
+		<!-- Head -->
+		<div class="">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center h1Index whiteColor">
+				<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+					<h1> 
+						<a href="home.html" class="btn btn-home" style="font-size:30px; margin:-5px 0 0 0;">
+							<span class="glyphicon glyphicon-home" aria-hidden="true"></span> 
+						</a>
+						Calcular
+					</h1>
+				</div>
+				<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1">
+		            <div class="dropdown MenuUsuario">
+		                <button class="margin-top-20px btn btn-home dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		                    <span class="glyphicon glyphicon-font" aria-hidden="true"></span>
+		                    <span class="caret"></span>
+		                </button>
+		                <ul class="dropdown-menu dropdown-menu-right">
+		                    <li class="hidden tipografia1" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="1" > Pequeño</a></li>
+		                     <li class="tipografia2" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="2" >Mediano</a></li>
+	                      	<li class="tipografia3" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="3" > Grande</a></li>
+		                </ul>
+		            </div>
+		        </div>
+			</div>
+		</div>
+		<!-- Contenido -->
+
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10px AdultoContenedor" >
+			<span style="font-size:25px; display:block;">Adultos</span>
+			<span style="font-size:16px; display:block;">19 a 65 años </span>
+		</div>
+
+		<!-- Contenido -->
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			
+			<form id="FormDatos" metod="POST" action="" >
+				<div id="ContenedorFormulario">
+					<div class="AdultoContenedor col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1" style="font-size:20px;">
+						Ingresar Valores
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10px">
+						<div class="form-group col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xs-offset-1 col-sm-offset-0">
+							<label for="peso" >Peso</label>
+			                <div class="">
+			                    <input type="number" step="any" id="peso" name="peso" class="transparent-input form-control" data-validation="number" data-validation-allowing="float" step="any" placeholder="kg" >
+			                </div>
+						</div>
+
+					</div>
+					
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-15px">
+						<div class="form-group col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xs-offset-1 col-sm-offset-0">
+							<label for="estatura" >Talla</label>
+			                <div class="">
+			                    <input type="number" id="estatura" name="estatura" class="transparent-input form-control" data-validation="number" data-validation-allowing="float"  step="any" placeholder="cm">
+			                </div>
+						</div>
+					</div>
+				</div>
+
+				<footer class="footerAcciones navbar-fixed-bottom">
+					<div id="ContenedorPaso1">
+						<div class="margin-top-10px  col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+								<button type="button" id="btnReset" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+								</button>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+								<button type="submit" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+					
+					<div id="ContenedorPaso2" class="DisplayNone">
+						<div class="margin-top-10px col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xs-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									
+								</div>
+								<button type="button" id="btnCalcularNuevo" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</footer>
+			</form>
+			<div id="espacioExtra">
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+				<br />
+			</div>
+		</div>
+
+		
+
+		<div id="ContenedorResultado" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="display: none;" >
+			<div id="ResultadoTexto" class="EstiloResultado BaseTexto AdultoContenedor col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-bottom-10px" style="font-size:16px;">
+				Resultado
+			</div>
+
+			<div class="col-xs-12 col-sm-6 col-md-4 col-lg-4 col-xs-offset-0 col-sm-offset-3 col-md-offset-4 col-lg-offset-4">
+			  	<div id="chartdiv"></div>
+				<div id="ValorIMC">99.99</div>
+				<div class="TextoIMC">IMC</div>
+			</div>
+			
+			<legend><h3>Parámetros</h3></legend>
+			<dl class='ParametrosResultado dl-horizontal ContenedorDL'>	
+				<table class="resultados">
+					<tr>
+						<td class="primera"><b>Peso</b> </td><td class="segunda">:<span id="ValorPeso"></span></td>
+					</tr>
+					<tr>
+						<td class="primera">Talla</td><td class="segunda">:<span id="ValorTalla"></span></td>
+					</tr>
+							
+				</table>
+			</dl>
+		</div>
+
+		<div id="paddingFooter">
+
+		</div>
+
+		<script type="text/javascript">
+
+			$(document).on("ready", function(){
+	    		$.validate({
+	    		 	form : '#FormDatos',
+	    		    lang: 'es',
+	                onSuccess: CalcularIMC,
+	    		});
+    		})
+
+    		function resizeFooter(){
+			    var footerMargin = $(".ParametrosResultado"); 
+			    var realFooter = $("footer"); 
+
+			    var heightFooter= realFooter.outerHeight();
+
+			    footerMargin.css("margin-bottom", heightFooter+20); 
+			}
+
+			function CalcularIMC(){
+				//Adulto 
+    			var estatura = Number($("#estatura").val()) / 100; 
+    			var peso = Number($("#peso").val()); 
+
+    			var imc = peso/(estatura*estatura)  ;
+
+    			var contenedor = $("#ContenedorResultado"); 
+    			var formularioContenedor = $("#ContenedorFormulario"); 
+
+    			contenedor.find("#ValorIMC").html(parseFloat(imc).toFixed(2));
+    			contenedor.find("#ValorPeso").html(peso+" (kg)");  
+    			contenedor.find("#ValorTalla").html($("#estatura").val()+" (cm)");  
+
+    			var nombreCategoria = "ERROR"; 
+    			var cssClassIMC = ""; 
+    			var cssIMCColor ="";
+    			
+	
+    			if (imc <= Number(18.4) ) {
+    				//bajo peso 
+    				nombreCategoria = "Bajo Peso "; 
+    				cssClassIMC = "IMCBajoPeso"; 
+    				cssIMCColor="#48c2db"; 
+    			}
+    			else if ( Number(18.5) <= imc  & imc < Number(24.9) ) {
+    				//normal
+    				nombreCategoria = "Normal"; 
+    				cssClassIMC = "IMCNormal"; 
+    				cssIMCColor = "#11c42e"; 
+    			}
+    			else if ( Number(24.9) <= imc  & imc < Number(29.9) ) {
+    				//sobre peso
+    				nombreCategoria = "Sobrepeso"; 
+    				cssClassIMC = "IMCSobrePeso";
+    				cssIMCColor = "#d38210"; 
+    			}
+    			else if ( Number(29.9) <= imc  & imc < Number(39.9) ) {
+    				//obeso 
+    				nombreCategoria = "Obeso"; 
+    				cssClassIMC = "IMCObeso";
+    				cssIMCColor = "#c41111";
+    			}
+    			else if ( imc > Number(39.9) ) {
+    				//obeso morbido 
+    				nombreCategoria = "Obeso Mórbido"; 
+    				cssClassIMC = "IMCObesoMorbido"; 
+    				cssIMCColor = "#a5481d";
+    			}
+    			contenedor.find("#ResultadoTexto").html(nombreCategoria).css("background-color", cssIMCColor);
+    			contenedor.find("#ValorIMC").removeClass();
+    			contenedor.find("#ValorIMC").addClass(cssClassIMC);
+
+
+
+    			if ( gaugeChart ) {
+				    if ( gaugeChart.arrows ) {
+				      if ( gaugeChart.arrows[ 0 ] ) {
+				        if ( gaugeChart.arrows[ 0 ].setValue ) {
+				        	if(parseFloat(imc).toFixed(2)>getMinEndValue(0,'adulto'))
+				        	{
+				        		if(parseFloat(imc).toFixed(2)>getMaxEndValue(1000,'adulto')){
+				        			gaugeChart.arrows[ 0 ].setValue(getMaxEndValue(1000,'adulto'));
+				        		}else{
+				        			gaugeChart.arrows[ 0 ].setValue( parseFloat(imc).toFixed(2));     			
+				        		}
+				        		$("#chartdiv").change();	        		
+				        	}    
+				        }
+				      }
+				    }
+			  	}
+
+    			formularioContenedor.fadeOut('slow', function(){
+    				contenedor.fadeIn("slow");
+    				$("#ContenedorPaso1").hide(0);
+    				$("#ContenedorPaso2").show(0);
+    				$("#espacioExtra").hide(0);
+    				resizeFooter();
+
+    			})
+    			return false ; 
+			}
+
+			$(document).on("click", "#btnReset" , function(){
+				$("#FormDatos").trigger("reset");
+			})
+			
+			$(document).on("click", "#btnCalcularNuevo" , function(){
+				$("#FormDatos").trigger("reset");
+				var contenedor = $("#ContenedorResultado"); 
+    			var formularioContenedor = $("#ContenedorFormulario"); 
+    			contenedor.fadeOut('slow', function(){
+    				formularioContenedor.fadeIn("slow");
+    				$("#ContenedorPaso1").show(0);
+    				$("#ContenedorPaso2").hide(0);
+    				$("#espacioExtra").show(0);
+    			})
+			})
+			
+			$(document).on("change", "#chartdiv", function(){
+				var delay = 1500; 
+				window.setTimeout(function(){
+					$("a[title='JavaScript charts']").fadeOut(200);
+    				$(".amcharts-axis-bottom-label").hide();
+				}, delay);
+			})
+		</script>
+
+		<script>
+			var gaugeChart = AmCharts.makeChart( "chartdiv", {
+			  "type": "gauge",
+			  "theme": "light",
+			  "axes": [ {
+			    "axisThickness": 1,
+			    "axisAlpha": 0.2,
+			    "tickAlpha": 0.2,
+			    "valueInterval": 5,
+				 "startValue": getMinEndValue(0,'adulto'),
+			    "endValue": getMaxEndValue(10000,'adulto'),
+			    "bands": [ {
+			      "color": "#48c2db",
+			      "innerRadius": "90%",
+			      "endValue": getMaxEndValue(18.4,'adulto'),
+			      "startValue": getMinEndValue(0,'adulto')
+			    }, {
+			      "color": "#11c42e",
+			      "innerRadius": "90%",
+			      "endValue": getMaxEndValue(24.9,'adulto'),
+			      "startValue": getMinEndValue(18.5,'adulto')
+			    }, {
+			      "color": "#d38210",
+			      "endValue":getMaxEndValue( 29.9,'adulto'),
+			      "innerRadius": "90%",
+			      "startValue":  getMinEndValue(24.9,'adulto')
+			    }, {
+			      "color": "#c41111",
+			      "endValue":getMaxEndValue( 39.9,'adulto'),
+			      "innerRadius": "90%",
+			      "startValue": getMinEndValue(29.9,'adulto')
+			    }, {
+			      "color": "#a5481d",
+			      "endValue":getMaxEndValue( 41,'adulto'),
+			      "innerRadius": "90%",
+			      "startValue": getMinEndValue(39.9,'adulto')
+			    } ],
+			    "bottomText": ""
+			  } ],
+			  "arrows": [ {} ],
+			  "export": {
+			    "enabled": false
+			  }
+			} );
+
+		</script>
+	</body>
+	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</html>

@@ -1,0 +1,742 @@
+<html>
+	<head>
+	    <meta name="format-detection" content="telephone=no">
+        <meta name="msapplication-tap-highlight" content="no">
+		<meta name="viewport" content=" width=device-width, initial-scale=1.0, maximum-scale=1.0, minimal-ui"/>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="chrome=1, IE=9">
+		<title>en UTA - IMC</title>
+		<!-- Socket.io -->
+		<!-- JQuery -->
+		<script type="text/javascript" src='js/lib/JQuery/jquery-2.2.4.min.js'></script>
+		<!-- Boostraps -->
+		<link rel="stylesheet" type="text/css" href="js/lib/bootstrap/css/bootstrap.min.css">
+		<script type="text/javascript" src='js/lib/bootstrap/js/bootstrap.min.js'></script>
+		<!-- Estilo -->
+		<link rel="stylesheet" type="text/css" href="css/style.css">
+		<!-- Jquery Validator http://formvalidator.net/ -->
+	    <script src="js/lib/Form-Validator/jquery.form-validator.min.js"></script>
+	    <script src="js/lib/Form-Validator/lang/es.js"></script>
+	    <!-- JStorage --> 
+	    <script type="text/javascript" src='js/lib/JSON2/json2.js'></script>
+	    <script type="text/javascript" src='js/lib/JStorage/jstorage.js'></script>
+	   	<!-- MomentJS --> 
+	    <script type="text/javascript" src="js/lib/momentjs/moment.js" charset="UTF-8"></script>
+	    <!-- Linq --> 
+	    <script type="text/javascript" src="js/lib/linq/linq.min.js" charset="UTF-8"></script>
+	    <!-- Masked Input  --> 
+	    <script type="text/javascript" src="js/lib/masked-input/jquery.maskedinput.min.js" charset="UTF-8"></script>
+	    <!-- Datos APP -->
+	    <script type="text/javascript" src="js/data/imc_edad_ninhos.js" charset="UTF-8"></script>
+	    <script type="text/javascript" src="js/data/imc_talla_ninhos.js" charset="UTF-8"></script>
+	    <script type="text/javascript" src="js/data/LE_EDAD.js" charset="UTF-8"></script>
+	    <script type="text/javascript" src="js/data/PESO_EDAD.js" charset="UTF-8"></script>
+	    <script type="text/javascript" src="js/data/PESO_ESTATURA.js" charset="UTF-8"></script>
+	    <script type="text/javascript" src="js/data/PESO_LONGITUD.js" charset="UTF-8"></script>
+ <!-- Funciones ninhos -->
+		 <script type="text/javascript" src="js/calcula_imc_ninhos.js" charset="UTF-8"></script>
+	    <!-- Amchart -->
+		<script src="js/lib/amchart/amcharts.js"></script>
+		<script src="js/lib/amchart/gauge.js"></script>
+		<script src="js/lib/amchart/themes/light.js"></script>
+<!-- Bootstrap Toggle -->
+		<link rel="stylesheet" type="text/css" href="js/lib/bootstrap-toggle/bootstrap-toggle.min.css">
+		<script type="text/javascript" src="js/lib/bootstrap-toggle/bootstrap-toggle.min.js" charset="UTF-8"></script>
+
+		<!-- Config --> 
+	    <script type="text/javascript" src='js/config.js'></script>
+		 <script type="text/javascript" >
+		$.formUtils.addValidator({
+        name : 'pesoMinimo',
+        validatorFunction : function(value, $el, config, language, $form) {
+            return (parseFloat(value) >= ninhosPesoMinimo);;
+        },
+        errorMessage : 'El peso debe ser mayor a 1.5 Kgs',
+        errorMessageKey: 'malPeso'
+		});
+		$.formUtils.addValidator({
+        name : 'anioValido',
+        validatorFunction : function(value, $el, config, language, $form) {
+            return (parseFloat(value) >1900 && parseFloat(value) <= (new Date()).getFullYear());;
+        },
+        errorMessage : 'El año no es válido',
+        errorMessageKey: 'malAnio'
+    });
+	$.formUtils.addValidator({
+        name : 'diaValido',
+        validatorFunction : function(value, $el, config, language, $form) {
+            return (parseFloat(value) > 0 &&  parseFloat(value) <32 );
+        },
+        errorMessage : 'El día no es válido',
+        errorMessageKey: 'malDia'
+    });
+	$.formUtils.addValidator({
+        name : 'mesValido',
+        validatorFunction : function(value, $el, config, language, $form) {
+            return (parseFloat(value) > 0 && parseFloat(value) < 13 );;
+        },
+        errorMessage : 'El mes no es válido',
+        errorMessageKey: 'malMes'
+    });
+	$.formUtils.addValidator({
+        name : 'estaturaMinima',
+        validatorFunction : function(value, $el, config, language, $form) {
+		console.log("estatura"+value);
+            return (parseFloat(value) > ninhosAlturaMinima);
+        },
+        errorMessage : 'La talla debe ser mayor a 30 cms',
+        errorMessageKey: 'malEstatura'
+    });
+	$.formUtils.addValidator({
+        name : 'total',
+        validatorFunction : function(value, $el, config, language, $form) {
+		var now = moment(); 
+		var sexo = $("#sexoM").prop("checked") ? "M" : "F"; 
+		var fecha_nacimiento_str=$('#inputDia').val()+'-'+$('#inputMes').val()+'-'+$('#inputAnio').val();
+    	var fecha_nacimiento = moment(fecha_nacimiento_str,  "DD-MM-YYYY" );
+		var estatura_cm = Number($("#estatura").val()) ; 		
+		var cantidad_anhos = Math.round(moment.duration(now - fecha_nacimiento).years());
+    	var cantidad_meses = Math.round(moment.duration(now - fecha_nacimiento).months());
+		var estatura_cm_half = (Math.round(estatura_cm * 2) / 2).toFixed(1) ; 
+		var entradaTablaEdad=getEntradaTablaEdad(cantidad_anhos,cantidad_meses,sexo);
+        var entradaTablaTalla=getEntradaTablaTalla(cantidad_anhos,cantidad_meses,sexo);
+		if (cantidad_anhos >= 5) {
+			if (entradaTablaTalla == null || entradaTablaEdad == null) {
+				return false ; 
+			}
+		}else{
+		
+			var flagLongitud = false ; 
+    			if (cantidad_anhos <= 2 ) {
+					if (cantidad_anhos < 2) {
+						flagLongitud = true ; 
+    				}
+    				if (cantidad_anhos == 2 & cantidad_meses == 0 ) {
+    						flagLongitud = true; 
+    					}
+    			}
+    				var dataPesoEstatura = flagLongitud ? PESO_LONGITUD : PESO_ESTATURA ; 
+					var entradaPESO_ESTATURA =  getEntradaPesoEstatura(dataPesoEstatura,estatura_cm_half,sexo);
+					if(entradaPESO_ESTATURA==null){
+						return false;
+					}
+		
+		}
+		return true;
+		}
+		,
+        errorMessage : NINHOS_INVALID_DATA_MSG_ERROR,
+        errorMessageKey: 'totalMal'
+    });
+	 $.validate();
+	</script>
+	</head>
+	<body class="bodyIndex">
+		<!-- Head -->
+		<div class="">
+			<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 text-center h1Index whiteColor">
+				<div class="col-xs-10 col-sm-10 col-md-10 col-lg-10">
+					<h1> 
+						<a href="home.html" class="btn btn-home" style="font-size:30px; margin:-5px 0 0 0;">
+							<span class="glyphicon glyphicon-home" aria-hidden="true"></span> 
+						</a>
+						Calcular
+					</h1>
+				</div>
+				<div class="col-xs-2 col-sm-2 col-md-1 col-lg-1">
+		            <div class="dropdown MenuUsuario">
+		                <button class="margin-top-20px btn btn-home dropdown-toggle" type="button" id="dropdownMenu1" data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+		                    <span class="glyphicon glyphicon-font" aria-hidden="true"></span>
+		                    <span class="caret"></span>
+		                </button>
+		                <ul class="dropdown-menu dropdown-menu-right">
+		                    <li class="hidden tipografia1" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="1" > Pequeño</a></li>
+		                     <li class="tipografia2" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="2" >Mediano</a></li>
+	                      	<li class="tipografia3" ><a href="javascript:void(0)" class="btnConfiguracionView" valor="3" > Grande</a></li>
+		                </ul>
+		            </div>
+		        </div>
+			</div>
+		</div>
+		<!-- Contenido -->
+	
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10px NinhoContenedor">
+			<span style="font-size:25px; display:block;">Niños</span>
+			<span style="font-size:16px; display:block;">0 a 19 años</span>
+		</div>
+
+		<!-- Contenido -->
+		<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			<form id="FormDatos" metod="POST" action="" >
+			
+				<div id="ContenedorFormulario">
+					<div class="NinhoContenedor col-xs-10 col-sm-10 col-md-10 col-lg-10 col-xs-offset-1 col-sm-offset-1 col-md-offset-1 col-lg-offset-1" style="font-size:20px;">
+						Ingresar Valores
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div id="total-error-dialog">&nbsp;</div>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+						
+					</div>
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 margin-top-15px">
+						<div class="form-group ">
+							<label for="sexoM" >Sexo Masculino</label>
+			                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			                   <input class="transparent-input form-control sexoCheckbox" id="sexoM" name="sexo" type="radio" value="M" checked>
+			                </div>
+						</div>
+					</div>
+					<div class="col-xs-1 col-sm-1 col-md-1 col-lg-1">
+						
+					</div>
+					<div class="col-xs-5 col-sm-5 col-md-5 col-lg-5 margin-top-15px">
+						<div class="form-group ">
+							<label for="sexoF" >Sexo Femenino</label>
+			                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+			                   <input class="transparent-input form-control sexoCheckbox" id="sexoF" name="sexo" type="radio" value="F">
+			                </div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10px">
+						<label for="fecha_nacimiento" >Fecha de Nacimiento</label>
+						<div class="form-group col-xs-12 col-sm-10 col-md-12 col-lg-12 col-xs-offset-1 col-sm-offset-0">
+							
+							<input type="hidden" id="fecha_nacimiento" name="fecha_nacimiento" data-validation="total" data-validation-error-msg-container="#total-error-dialog"/>
+						   <div class="">
+						    <div class="form-group row">
+							<div class="col-md-2 col-xs-2">
+							<input type="number" class="form-control transparent-input"  maxlength="2" id="inputDia" inputmode="numeric" data-validation="diaValido" data-validation-error-msg-container="#fecha_nacimiento-error-dialog" placeholder="05"/>
+							</div>
+							 <label for="inputMes" class="col-md-1 col-xs-1 control-label">/</label>
+							<div class="col-md-2 col-xs-2">
+								<input type="number" class="form-control transparent-input" maxlength="2"  id="inputMes" inputmode="numeric" data-validation="mesValido" data-validation-error-msg-container="#fecha_nacimiento-error-dialog" placeholder="06"/>
+							</div>
+							<label for="inputAnio" class="col-md-1 col-xs-1 control-label">/</label>
+							<div class="col-md-2 col-xs-3">
+							<input type="number" class="form-control transparent-input" maxlength="4" id="inputAnio" inputmode="numeric" data-validation="anioValido" data-validation-error-msg-container="#fecha_nacimiento-error-dialog" placeholder="1991" />
+						</div>
+						</div>
+						  
+			                </div>
+						</div>
+						<div id="fecha_nacimiento-error-dialog">&nbsp;</div>
+						
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+						<div class="form-group col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xs-offset-1 col-sm-offset-0">
+							<label for="peso" >Peso</label>
+			                <div class="">
+			                    <input type="number" id="peso" name="peso" class="form-control transparent-input " data-validation="number pesoMinimo" data-validation-allowing="float"  step="any" placeholder="kg">
+			                </div>
+						</div>
+					</div>
+
+					<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-10px">
+						<div class="form-group col-xs-10 col-sm-10 col-md-12 col-lg-12 col-xs-offset-1 col-sm-offset-0">
+							<label for="estatura" >Talla</label>
+			                <div class="">
+			                    <input type="number" step="any" id="estatura" name="estatura" class="transparent-input form-control" data-validation="number estaturaMinima" data-validation-allowing="float" placeholder="cm" >
+			                </div>
+						</div>
+					</div>
+					<div id="PaddingFormulario" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" ></div>
+				</div>
+
+				<footer class="footerAcciones navbar-fixed-bottom">
+					<div id="ContenedorPaso1">
+						<div class="margin-top-10px  col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+								<button type="button" id="btnReset" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+								</button>
+							</div>
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6">
+								<button type="submit" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-ok" aria-hidden="true"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+					
+					<div id="ContenedorPaso2" class="DisplayNone">
+						<div class="margin-top-10px col-xs-12 col-sm-12 col-md-12 col-lg-12">
+							<div class="col-xs-6 col-sm-6 col-md-6 col-lg-6 col-xs-offset-3 col-sm-offset-3 col-md-offset-3 col-lg-offset-3">
+								<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+									
+								</div>
+								<button type="button" id="btnCalcularNuevo" class="transparent-input center-block col-xs-12 col-sm-12 col-md-12 col-lg-12" style="font-size:35px; color: white;">
+									<span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>
+								</button>
+							</div>
+						</div>
+					</div>
+				</footer>
+
+			</form>
+		</div>
+
+		<div id="ContenedorResultado" class="col-xs-12 col-sm-12 col-md-12 col-lg-12" style="display:none;">
+			
+
+			<div class="ContenedorResultado_5">
+				<div id="ResultadoTexto" class="BaseTexto EstiloResultado NinhoContenedor col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-bottom-10px" style="font-size:16px;">
+					Resultado
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">
+					<div id="chartdiv"></div>
+					<div id="ValorIMC">99.99</div>
+					<div class="TextoIMC">IMC Z</div>
+				</div>
+				
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-bottom-10px">
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 margin-top-10px">
+						<a href="javascript:void(0)" id="btnGraficoIMCZ" disabled class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">Ver Gráfico IMC EDAD</a>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 margin-top-10px">
+						<a href="javascript:void(0)" id="btnGraficoTalla"  class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">Ver Gráfico TALLA EDAD</a>
+					</div>
+				</div>
+			</div>
+
+			<div class="ContenedorResultado_5">
+				<legend class="margin-top-10px"><h4>Parámetros</h4></legend>
+				
+				<div class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<dl class='dl-horizontal ContenedorDL'>
+						<table class="resultados">
+							<tr>
+								<td class="primera"><b>Peso</b> </td><td class="segunda">:<span id="ValorPeso"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Talla</td><td class="segunda">:<span id="ValorTalla"></span></td>
+							</tr>
+							<tr>
+								<td class="primera"> Sexo </td><td class="segunda">:<span id="SexoParametro"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Fecha Nacimiento </td><td class="segunda">:<span id="FechaNacimiento"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Año/Meses</td><td class="segunda">:<span id="CantidadDiasNacimiento"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">IMC Real</td><td class="segunda">:<span id="IMCReal"></span></td>	
+							</tr>		
+						</table>
+
+					</dl>
+				</div>
+
+				<h4>
+					RESULTADOS IMC EDAD
+				</h4>
+				<a id="btnVerMasEdad" mostrar="1" contenedor="ContenedorResultadosEdad" class="btnVerMasInfo" href="jasvascript:void(0)" style="font-size:13px" >Ver Más</a>
+				<div id="ContenedorResultadosEdad" class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+						<table class="resultados">
+							<tr>
+								<td class="primera"><b>IMC Z</b> </td><td class="segunda">:<span id="IMCZ"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera"><b>Mediana (M)</b> </td><td class="segunda">:<span id="MedianaMZ"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera">Constante (L)</td><td class="segunda">:<span id="ConstanteL"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera"> Desviacion (S) </td><td class="segunda">:<span id="DesviacionS"></span></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+				<h4>
+					RESULTADOS TALLA EDAD
+				</h4>
+				<a id="btnVerMasTalla" mostrar="1" contenedor="ContenedorResultadosTalla" class="btnVerMasInfo" href="jasvascript:void(0)" style="font-size:13px" >Ver Más</a>
+				<div id="ContenedorResultadosTalla"  class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+						<table class="resultados">
+							<tr>
+								<td class="primera"><b>Talla Z</b> </td><td class="segunda">:<span id="TallaZ"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera"><b>Mediana (M)</b> </td><td class="segunda">:<span id="MedianaMTalla"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera">Constante (L)</td><td class="segunda">:<span id="ConstanteLTalla"></span></td>
+							</tr>
+							<tr class="DisplayNone">
+								<td class="primera"> Desviacion (S) </td><td class="segunda">:<span id="DesviacionSTalla"></span></td>
+							</tr>
+						</table>
+					</div>
+				</div>
+			</div>
+
+			<div id="ContenedorResultado0_5">
+				<div id="ResultadoTexto0_5" class="BaseTexto EstiloResultado NinhoContenedor col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-bottom-10px" style="font-size:26px;">
+					Resultado
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 col-md-offset-4 col-lg-offset-4">
+						<div id="chartdiv_0_5"></div>
+						<div id="ValorIMC" class="ValorIMC">99.99</div>
+						<div class="TextoIMC" class="TextoIMC">IMC Z</div>
+					</div>
+				</div>
+				<div class="col-xs-12 col-sm-12 col-md-12 col-lg-12 margin-top-bottom-10px">
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 margin-top-10px">
+						<a href="javascript:void(0)" id="btnGraficoLE" disabled class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">Ver Gráfico Talla Edad</a>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 margin-top-10px">
+						<a href="javascript:void(0)" id="btnGraficoPESO_EDAD"  class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">Ver Gráfico Peso Edad</a>
+					</div>
+					<div class="col-xs-12 col-sm-12 col-md-4 col-lg-4 margin-top-10px">
+						<a href="javascript:void(0)" id="btnGraficoPESO_TALLA"  class="btn btn-success col-xs-12 col-sm-12 col-md-12 col-lg-12">Ver Gráfico Peso Talla</a>
+					</div>
+				</div>
+
+
+				<legend class="margin-top-10px"><h4>Parámetros</h4></legend>
+				<div class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+						<table class="resultados">
+							<tr>
+								<td class="primera"><b>Peso</b> </td><td class="segunda">:<span class="ValorPeso"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Talla</td><td class="segunda">:<span class="ValorTalla"></span></td>
+							</tr>
+							<tr>
+								<td class="primera"> Sexo </td><td class="segunda">:<span class="SexoParametro"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Fecha Nacimiento </td><td class="segunda">:<span class="FechaNacimiento"></span></td>
+							</tr>
+							<tr>
+								<td class="primera">Año/Meses</td><td class="segunda">:<span class="CantidadDiasNacimiento"></span></td>
+							<td class="IMCReal">IMC Real</td><dd class="IMCReal" class="IMCReal"></dd>			
+						</table>
+					</div>
+				</div>
+				<!--
+				<dl class='dl-horizontal ContenedorDL'>
+						<dt>Peso: <span class="ValorPeso"></span></dt>
+						<dt>Talla: <span class="ValorTalla"></span></dt>
+						<dt>Sexo: <span class="SexoParametro"></span></dt>
+						<dt>Fecha Nacimiento: <span class="FechaNacimiento"></span></dt>
+						<dt>Año/Meses:<span class="CantidadDiasNacimiento"></span></dt>
+						<dt class="IMCReal">IMC Real</dt><dd class="IMCReal" class="IMCReal"></dd>			
+					</dl>
+					-->
+
+
+				<h4>
+					RESULTADOS TALLA EDAD
+				</h4>
+				<a id="btnVerMasLE" mostrar="1" contenedor="ContenedorResultadosLE_EDAD" class="btnVerMasInfo" href="jasvascript:void(0)" style="font-size:13px" >Ver Más</a>
+				<div id="ContenedorResultadosLE_EDAD" class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+						<dt>Talla Edad</dt><dd id="IMCZ"></dd>
+						<table class="resultados DisplayNone" >
+							<tr id="segunda">
+								<td>-2 DE </td>
+								<td>-1 DE</td>
+								<td class="MedianaM">Mediana </td>
+								<td>1 DE</td>
+								<td>2 DE</td>
+							</tr>
+							<tr id="segunda">
+								<td id="M2DE"></td>
+								<td id="M1DE"></td>
+								<td id="MedianaM"></td>
+								<td id="1DE"></td>
+								<td id="2DE"></td>
+							</tr>
+						</table>		
+					</div>
+				</div>
+					<!--
+					<dt class="DisplayNone" >-2 DE </dt><dd id="M2DE" class="DisplayNone" ></dd>
+						<dt class="DisplayNone" >-1 DE</dt><dd id="M1DE" class="DisplayNone" ></dd>
+						<dt class="DisplayNone" >Mediana </dt><dd id="MedianaM" class="DisplayNone" ></dd>
+						<dt class="DisplayNone" >1 DE</dt><dd id="1DE" class="DisplayNone" ></dd>
+						<dt class="DisplayNone" >2 DE</dt><dd id="2DE" class="DisplayNone" ></dd>
+					-->
+				<h4>
+					RESULTADOS PESO EDAD
+				</h4>
+				<a id="btnVerMasLE" mostrar="1" contenedor="ContenedorResultadosPESO_EDAD" class="btnVerMasInfo" href="jasvascript:void(0)" style="font-size:13px" >Ver Más</a>
+				<div id="ContenedorResultadosPESO_EDAD" class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+							<dt>Peso Edad</dt><dd id=""></dd>
+							<table class="resultados DisplayNone" >
+								<tr id="segunda">
+									<td>-2 DE </td>
+									<td>-1 DE</td>
+									<td class="MedianaM">Mediana </td>
+									<td>1 DE</td>
+									<td>2 DE</td>
+								</tr>
+								<tr id="segunda">
+									<td id="M2DE"></td>
+									<td id="M1DE"></td>
+									<td id="MedianaM"></td>
+									<td id="1DE"></td>
+									<td id="2DE"></td>
+								</tr>
+							</table>		
+						</div>	
+				</div>
+
+				<h4 id="tituloPESO_ESTATURA">
+					RESULTADOS PESO TALLA
+				</h4>
+				<a id="btnVerMasLE" mostrar="1" contenedor="ContenedorResultadosPESO_ESTATURA" class="btnVerMasInfo" href="jasvascript:void(0)" style="font-size:13px" >Ver Más</a>
+				<div id="ContenedorResultadosPESO_ESTATURA" class="ParametrosResultado col-xs-12 col-sm-12 col-md-12 col-lg-12 ">
+					<div class='dl-horizontal ContenedorDL'>
+						<dt>Peso Talla</dt><dd id=""></dd>
+						<table class="resultados DisplayNone" >
+							<tr id="segunda">
+								<td>-2 DE </td>
+								<td>-1 DE</td>
+								<td class="MedianaM">Mediana </td>
+								<td>1 DE</td>
+								<td>2 DE</td>
+							</tr>
+							<tr id="segunda">
+								<td id="M2DE"></td>
+								<td id="M1DE"></td>
+								<td id="MedianaM"></td>
+								<td id="1DE"></td>
+								<td id="2DE"></td>
+							</tr>
+						</table>		
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script type="text/javascript">
+			var FLAG_IMCZ = true ; 
+			var CHART_0_5 = "LE"; 
+				$(document).on("ready", function(){
+	    		$.validate({
+	    		 	form : '#FormDatos',
+	    		    lang: 'es',
+	                onSuccess: calcularImc,
+	    		});
+	    		var startdate = moment();
+				//startdate = startdate.subtract(6, "years");
+				var startdateFormat = startdate.format("DD-MM-YYYY");
+				$("#fecha_nacimiento").attr("placeholder", startdateFormat);
+
+				resizeFooter();
+				$("#inputDia").keyup(function () {
+					if (this.value.length == this.maxLength) {
+						$('#inputMes').focus();
+					}
+				});
+				$("#inputMes").keyup(function () {
+					if (this.value.length == this.maxLength) {
+						$('#inputAnio').focus();
+					}
+				});
+				$("#inputAnio").keyup(function () {
+					if (this.value.length == this.maxLength) {
+						$('#peso').focus();
+					}
+				});
+				
+    		});
+    	
+
+    		$(document).on("change", ".sexoCheckbox", function(){
+    			var self = $(this); 
+    			$(".sexoCheckbox").prop("checked", false); 
+    			self.prop("checked", true); 
+    		})
+
+    		$(document).on("click", ".btnVerMasInfo", function(){
+    			var self= $(this); 
+    			var contenedor = $("#"+self.attr("contenedor") ) ;
+    			var mostrar = Number(self.attr("mostrar")); 
+    			if (mostrar == 1) {
+    				self.attr("mostrar", "0");
+    				contenedor.find(".DisplayNone").show("slow");
+    				self.html("Ver Menos");
+    			}else{
+    				self.attr("mostrar", "1");
+    				contenedor.find(".DisplayNone").hide("slow");
+    				self.html("Ver Más");
+    			}
+    		})
+    		
+			
+
+			function resizeFooter(){
+			    var footerMargin = $(".ParametrosResultado"); 
+			    var formContenido = $("#ContenedorResultado"); 
+			    var realFooter = $("footer"); 
+			    var marginCustom = -10; 
+
+			    var heightFooter= realFooter.outerHeight();
+
+			    footerMargin.css("margin-bottom", heightFooter+marginCustom); 
+			    formContenido.css("margin-bottom", heightFooter+marginCustom); 
+			    $("#PaddingFormulario").css("margin-bottom", heightFooter+marginCustom); 
+			}
+
+
+			$(document).on("click", "#btnReset" , function(){
+				$("#FormDatos").trigger("reset");
+				/*
+				var startdate = moment();
+				startdate = startdate.subtract(6, "years");
+				var startdateFormat = startdate.format("YYYY-MM-DD");
+				$("#fecha_nacimiento").val(startdateFormat);
+				*/
+
+			})
+			
+			$(document).on("click", "#btnCalcularNuevo" , function(){
+				 location.reload();
+			})
+
+			//BTN GRAFICOS IMZ 
+			$(document).on("click", "#btnGraficoIMCZ" , function(){
+				var self = $(this);
+				var otherBtn = $("#btnGraficoTalla");
+
+				if (self.is("[disabled]") == false ) {
+					FLAG_IMCZ = true; 
+					self.attr("disabled", "disabled"); 
+					otherBtn.removeAttr("disabled"); 
+					calcularImc();
+				}
+			})
+
+			$(document).on("click", "#btnGraficoTalla" , function(){
+				var self = $(this);
+				var otherBtn = $("#btnGraficoIMCZ");
+
+				if (self.is("[disabled]") == false ) {
+					console.log('aqui');
+					FLAG_IMCZ = false; 
+					self.attr("disabled", "disabled"); 
+					otherBtn.removeAttr("disabled"); 
+					calcularImc();
+				}
+			})
+
+			//BTN GRAFICOS 0 - 5 AÑOS
+			$(document).on("click", "#btnGraficoLE" , function(){
+				var self = $(this);
+				var otherBtnA = $("#btnGraficoPESO_EDAD");
+				var otherBtnB = $("#btnGraficoPESO_TALLA");
+
+				if (self.is("[disabled]") == false ) {
+					CHART_0_5 = "LE"; 
+					self.attr("disabled", "disabled"); 
+					otherBtnA.removeAttr("disabled"); 
+					otherBtnB.removeAttr("disabled"); 
+					calcularImc();
+				}
+			})
+
+			$(document).on("click", "#btnGraficoPESO_EDAD" , function(){
+				var self = $(this);
+				var otherBtnA = $("#btnGraficoLE");
+				var otherBtnB = $("#btnGraficoPESO_TALLA");
+
+				if (self.is("[disabled]") == false ) {
+					CHART_0_5 = "PESO_EDAD"; 
+					self.attr("disabled", "disabled"); 
+					otherBtnA.removeAttr("disabled"); 
+					otherBtnB.removeAttr("disabled"); 
+					calcularImc();
+				}
+			})
+
+			$(document).on("click", "#btnGraficoPESO_TALLA" , function(){
+				var self = $(this);
+				var otherBtnA = $("#btnGraficoLE");
+				var otherBtnB = $("#btnGraficoPESO_EDAD");
+
+				if (self.is("[disabled]") == false ) {
+					CHART_0_5 = "PESO_TALLA"; 
+					self.attr("disabled", "disabled"); 
+					otherBtnA.removeAttr("disabled"); 
+					otherBtnB.removeAttr("disabled"); 
+					calcularImc();
+				}
+			})
+		</script>
+
+		<script>
+			$(document).on("change", "#chartdiv", function(){
+				var delay = 1500; 
+				window.setTimeout(function(){
+					$("a[title='JavaScript charts']").fadeOut(200);
+    				$(".amcharts-axis-bottom-label").hide();
+				}, delay);
+			})
+			var gaugeChart = AmCharts.makeChart( "chartdiv", {
+			  "type": "gauge",
+			  "theme": "light",
+			  "axes": [ {
+			    "axisThickness": 1,
+			    "axisAlpha": 0.2,
+			    "tickAlpha": 0.2,
+			    "valueInterval": 1,
+			    "bands": [ {
+			   	 "color": "#112fc4",
+			      "innerRadius": "90%",
+			      "endValue": -2,
+			      "startValue": -3
+			    }, {
+			      "color": "#48c2db",
+			      "innerRadius": "90%",
+			      "endValue": -1,
+			      "startValue": -2
+			    }, {
+			      "color": "#11c42e",
+			      "endValue": 1,
+			      "innerRadius": "90%",
+			      "startValue": -1
+			    }, {
+			      "color": "#d38210",
+			      "endValue": 2,
+			      "innerRadius": "90%",
+			      "startValue": 1
+			    }, 
+			    {
+			      "color": "#a5481d",
+			      "endValue": 3,
+			      "innerRadius": "90%",
+			      "startValue": 2
+			    }, 
+			     
+			    ],
+			    "bottomText": "",
+			    //"bottomTextYOffset": -20,
+			    "endValue": 3,
+			    "startValue": -3,
+			  } ],
+			  "arrows": [ {} ],
+			  "export": {
+			    "enabled": false
+			  }
+			} );
+		</script>
+		<script>
+		</script>
+	</body>
+	<script type="text/javascript" src="cordova.js"></script>
+	<script type="text/javascript" src="js/index.js"></script>
+</html>
